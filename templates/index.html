@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Stickman Fight Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .generator-section {
+            padding: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+            font-size: 1.1rem;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            resize: vertical;
+            min-height: 100px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            width: 100%;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .examples {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .examples h3 {
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .example-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .example-btn {
+            font-size: 14px;
+            padding: 10px;
+            background: #f8f9fa;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+
+        .example-btn:hover {
+            background: #e9ecef;
+        }
+
+        .result-section, .error-section {
+            padding: 30px;
+            text-align: center;
+            display: none;
+        }
+
+        .result-section {
+            background: #f8fff9;
+            border-top: 3px solid #28a745;
+        }
+
+        .error-section {
+            background: #f8d7da;
+            border-top: 3px solid #dc3545;
+            color: #721c24;
+        }
+
+        .video-container {
+            margin: 20px 0;
+        }
+
+        video {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .download-btn {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 12px 25px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background 0.3s;
+            margin-top: 15px;
+        }
+
+        .download-btn:hover {
+            background: #218838;
+            color: white;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            color: #666;
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .example-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            body {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎬 AI Stickman Fight Generator</h1>
+            <p>Describe a fight scene and watch AI bring it to life!</p>
+        </header>
+
+        <div class="generator-section">
+            <form id="animationForm">
+                <div class="input-group">
+                    <label for="fight_description">Describe Your Fight Scene:</label>
+                    <textarea 
+                        id="fight_description" 
+                        name="fight_description" 
+                        placeholder="Example: 'right punch then left kick' or 'jump and punch'..." 
+                        required
+                    ></textarea>
+                </div>
+
+                <button type="submit" id="generateBtn">
+                    Generate Animation
+                </button>
+            </form>
+
+            <div class="examples">
+                <h3>Try these examples:</h3>
+                <div class="example-buttons">
+                    <button type="button" class="example-btn" data-text="right punch then left kick">Quick Combo</button>
+                    <button type="button" class="example-btn" data-text="punch right then kick right">Power Attack</button>
+                    <button type="button" class="example-btn" data-text="left punch then right punch">Double Punch</button>
+                    <button type="button" class="example-btn" data-text="kick right then victory">Kick & Celebrate</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="loading" id="loadingSection">
+            <div class="spinner"></div>
+            <p>Generating your animation... This may take a few seconds.</p>
+        </div>
+
+        <div id="resultSection" class="result-section">
+            <h2>✅ Your Animation is Ready!</h2>
+            <div class="video-container">
+                <video id="generatedVideo" controls autoplay>
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            <div class="download-section">
+                <a id="downloadLink" class="download-btn" download>
+                    📥 Download Animation
+                </a>
+            </div>
+        </div>
+
+        <div id="errorSection" class="error-section">
+            <h2>❌ Oops! Something went wrong</h2>
+            <p id="errorMessage">Error message will appear here</p>
+            <button onclick="retry()" style="margin-top: 15px; width: auto;">Try Again</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>Powered by AI • Built with Python & Flask</p>
+    </footer>
+
+    <script>
+        // Example buttons functionality
+        document.querySelectorAll('.example-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                document.getElementById('fight_description').value = this.getAttribute('data-text');
+            });
+        });
+
+        // Form submission
+        document.getElementById('animationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const generateBtn = document.getElementById('generateBtn');
+            const loadingSection = document.getElementById('loadingSection');
+            const resultSection = document.getElementById('resultSection');
+            const errorSection = document.getElementById('errorSection');
+            
+            // Show loading, hide other sections
+            generateBtn.disabled = true;
+            generateBtn.textContent = 'Generating...';
+            loadingSection.style.display = 'block';
+            resultSection.style.display = 'none';
+            errorSection.style.display = 'none';
+            
+            try {
+                const formData = new FormData(this);
+                
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Show the generated video
+                    const videoElement = document.getElementById('generatedVideo');
+                    const downloadLink = document.getElementById('downloadLink');
+                    
+                    videoElement.src = data.video_url;
+                    downloadLink.href = data.video_url;
+                    resultSection.style.display = 'block';
+                    
+                    // Scroll to result
+                    resultSection.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    // Show error
+                    document.getElementById('errorMessage').textContent = data.message;
+                    errorSection.style.display = 'block';
+                    errorSection.scrollIntoView({ behavior: 'smooth' });
+                }
+                
+            } catch (error) {
+                document.getElementById('errorMessage').textContent = 'Network error: ' + error.message;
+                errorSection.style.display = 'block';
+                errorSection.scrollIntoView({ behavior: 'smooth' });
+            } finally {
+                // Reset button state
+                generateBtn.disabled = false;
+                generateBtn.textContent = 'Generate Animation';
+                loadingSection.style.display = 'none';
+            }
+        });
+
+        function retry() {
+            document.getElementById('errorSection').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
